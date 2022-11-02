@@ -1,17 +1,18 @@
 import userModel from '../model/user.js'
-import {hashPassword,comparePassword,generateAccessToken} from '../utils/user.js'
+import {hashPassword,comparePassword,generateAccessToken} from '../helpers/authHelper.js'
 
 const getAllUsers = async (req,res)=> {
     try{
-        console.log(req.headers)
-        console.log(req.headers.host)
-        console.log(req.headers['host'])
+        // console.log(req.headers)
+        // console.log(req.headers.host)
+        // console.log(req.headers['host'])
         const response = await userModel.find({},{password:0}) //Retrieve the all documents instance from database-collection but no password.
         console.log(response)
-        res.send(response)
+        res.status(200).send(response)
     }
     catch(error){
         console.log(error)
+        res.status(400).send(response)
     }
 }
 
@@ -82,7 +83,7 @@ const logIn = async (req,res) => {
             }else{
                 console.log('Access token: ',restToken.token) //login success!
                 // res.cookie('jwt_token', restToken.token)
-                res.cookie('jwt_token', restToken.token, { maxAge: 15000, httpOnly: true, secure: true })
+                res.cookie('jwt_token', restToken.token, { maxAge: 1000*60*5, httpOnly: true, secure: true })
             res.json({logged:true})
             }
         }else{
