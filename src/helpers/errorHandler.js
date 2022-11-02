@@ -1,12 +1,12 @@
 // Not found
-const notFound = (req, res, next) => {
-    const error = new Error(`Not Found - ${req.method} ${req.originalUrl}`);
-    res.status(404);
-    next(error);
-  };
+// const notFound = (req, res, next) => {
+//     const error = new Error(`Not Found - ${req.method} ${req.originalUrl}`);
+//     res.status(404);
+//     next(error);
+//   };
   
 // Error handling
-const errorHandler = (error, _req, res, next) => {
+const errorHandler = (error, req, res, next) => {
   // const statusCode = res.statusCode === 200_range ? 500 : res.statusCode;
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     console.log('status', statusCode)
@@ -19,4 +19,5 @@ const errorHandler = (error, _req, res, next) => {
     next();
   };
 
-export { notFound, errorHandler }
+export { errorHandler }
+// export { notFound, errorHandler }

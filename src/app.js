@@ -6,7 +6,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser'
 import connectDB from "./db/conn.js"
 import userRouter  from './routes/user.js'
-import { notFound, errorHandler } from './helpers/errorHandler.js'
+import { errorHandler } from './helpers/errorHandler.js'
+// import { notFound, errorHandler } from './helpers/errorHandler.js'
 
 
 try {
@@ -26,11 +27,12 @@ app.use(cookieParser())
 
 app.use('/api/user',userRouter)
 // app.use('/api/user', userAuth, userRouter)
-// app.get('/', (req,res) => {
-//     console.log("Api landing page ...")
-//     res.send("Api landing page ...")
-// })
-app.use(notFound);
+app.get('/', (req,res) => {
+    console.log("Api landing page ...")
+    res.send("Api landing page ...")
+})
+
+// app.use(notFound);
 app.use(errorHandler);
 
 app.listen(EXPRESS_PORT, (req,res) => {

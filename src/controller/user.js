@@ -84,7 +84,8 @@ const logIn = async (req,res) => {
                 console.log('Access token: ',restToken.token) //login success!
                 // res.cookie('jwt_token', restToken.token)
                 res.cookie('jwt_token', restToken.token, { maxAge: 1000*60*5, httpOnly: true, secure: true })
-            res.json({logged:true})
+                res.status(200)
+                res.json({logged:true})
             }
         }else{
             throw "Invalid Credentials!"
