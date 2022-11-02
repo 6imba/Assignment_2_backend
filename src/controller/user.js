@@ -1,5 +1,5 @@
 import userModel from '../model/user.js'
-import {hashPassword,comparePassword} from '../utils/user.js'
+import {hashPassword,comparePassword,generateAccessToken} from '../utils/user.js'
 
 const getAllUsers = async (req,res)=> {
     try{
@@ -74,15 +74,24 @@ const logIn = async (req,res) => {
         }
         const passMatch = await comparePassword(req.body.password,user.password)
         if(passMatch){
-            console.log("Logged In!")
+            const userId = user._id.toString()
+            const restToken = await generateAccessToken(userId)
+            // console.log('Generating access token: ',restToken)
+            if(restToken.error){
+                throw restToken.errorMsg
+            }else{
+                console.log('Access token: ',restToken.token) //login success!
+                // res.cookie('jwt_token', restToken.token)
+                res.cookie('jwt_token', restToken.token, { maxAge: 15000, httpOnly: true, secure: true })
             res.json({logged:true})
+            }
         }else{
-            throw "Invalid Creadentials"
+            throw "Invalid Credentials!"
         }
     }
     catch(error){
-        console.log(error)
-        res.json({logged:false})
+        console.log('Error while generating access token: ',error) //login fail!     
+        res.json({logged:false, errorMsg:error})
     }
 }
 
