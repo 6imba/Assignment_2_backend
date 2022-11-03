@@ -3,16 +3,13 @@ import {hashPassword,comparePassword,generateToken} from '../helpers/authHelper.
 
 const getAllUsers = async (req,res)=> {
     try{
-        // console.log(req.headers)
-        // console.log(req.headers.host)
-        // console.log(req.headers['host'])
         const response = await userModel.find({},{password:0}) //Retrieve the all documents instance from database-collection but no password.
         console.log("Response all users!")
         res.status(200).send(response)
     }
     catch(error){
         console.log(error)
-        res.status(400).send(response)
+        // res.status(400).send(error)
     }
 }
 
@@ -81,10 +78,8 @@ const logIn = async (req,res,next) => {
             if(error){
                 throw error
             }else{
-                res.cookie('accessToken', accessToken)
-                res.cookie('refreshToken', refreshToken)
-                // res.cookie('accessToken', accessToken, { maxAge: 300000, secure: true })
-                // res.cookie('refreshToken', refreshToken, { maxAge: 2592000000, secure: true })
+                res.cookie('accessToken', accessToken, { secure: true })
+                res.cookie('refreshToken', refreshToken, { httpOnly:true , secure: true })
                 res.status(200)
                 res.json({logged:true})
             }

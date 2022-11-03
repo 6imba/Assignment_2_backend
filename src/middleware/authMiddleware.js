@@ -1,22 +1,48 @@
 import {verifyToken} from '../helpers/authHelper.js'
+import {generateToken} from '../helpers/authHelper.js'
+
+const verify = async(token,secret) => {
+    if(!token){
+        return {error:true, message:'Token not found'}
+    }
+    const tokenVerification = await verifyToken(token,secret)
+    if(tokenVerification.error){
+        console.log(tokenVerification)
+        return tokenVerification
+    }
+    else{
+        console.log(tokenVerification)
+        return tokenVerification
+    }  
+}
 
 const auth = async (req,res,next) => {
     const accessToken = req.cookies.accessToken;
-    if(!accessToken){
-        res.status(400)
-        return next(new Error('Token not found'))
-    }
-    const accessTokenVerification = await verifyToken(accessToken)
-    if(accessTokenVerification.error){
-        console.log(accessTokenVerification)
-        res.status(401)
-        return next(new Error('Token not authenticated.'))
+    const tokenVerification = await verify(accessToken, process.env.ACCESS_TOKEN_SECRET_KEY)
+    if(tokenVerification.error){
+        console.log("access token expire")
+        const refreshToken = req.cookies.refreshToken;
+        const tokenVerification = await verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY)
+        console.log(tokenVerification)
+        if(!tokenVerification.error){
+            console.log("generate new access token")
+            // generate new access token and return
+            const {accessToken} = await generateToken(tokenVerification.tokenDetail.userId)
+            res.cookie('accessToken', accessToken)
+            res.status(200)
+            next()
+        }
+        else{
+            res.status(401)
+            res.clearCookie('accessToken')
+            res.clearCookie('refreshToken')        
+            return next(new Error('Token not authenticated.'))
+        }
     }
     else{
-        console.log(accessTokenVerification)
-        console.log("Token authenticated. So no need to login!")
         next()
-    }   
+    }
+
 }
 
 // const logAuth = async (req,res,next) => {
