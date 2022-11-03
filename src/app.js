@@ -18,7 +18,7 @@ try {
 }
 
 const app = express()
-const EXPRESS_PORT = process.env.EXPRESS_PORT || '8000'
+const EXPRESS_PORT = process.env.PORT || '8000'
 const corsOptions = { origin: '*', credentials: true };
 
 app.use(cors(corsOptions));
@@ -35,5 +35,6 @@ app.use(notFound);
 app.use(errorHandler);
 
 app.listen(EXPRESS_PORT, (req,res) => {
-    console.log(`Express start at http://localhost:${EXPRESS_PORT}`)
+    console.log(`Express start at:${EXPRESS_PORT}`)
 })
+

@@ -8,8 +8,8 @@ const comparePassword = async (reqPass,hashPass) => await bcrypt.compare(reqPass
 const generateToken = async (id) => {
     try{
         const payload = {userId:id}
-        const accessToken = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY, {expiresIn: '5s'})
-        const refreshToken = await jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET_KEY, {expiresIn: '20s'})
+        const accessToken = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY, {expiresIn: '5m'})
+        const refreshToken = await jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET_KEY, {expiresIn: '30d'})
         return {error:false,accessToken,refreshToken}
     }catch(error){
         return {err:true,errorMsg:error}
