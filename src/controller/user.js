@@ -1,17 +1,15 @@
 import userModel from '../model/user.js'
-import {hashPassword,comparePassword} from '../utils/user.js'
+import {hashPassword,comparePassword,generateToken} from '../helpers/authHelper.js'
 
 const getAllUsers = async (req,res)=> {
     try{
-        console.log(req.headers)
-        console.log(req.headers.host)
-        console.log(req.headers['host'])
         const response = await userModel.find({},{password:0}) //Retrieve the all documents instance from database-collection but no password.
-        console.log(response)
-        res.send(response)
+        console.log("Response all users!")
+        res.status(200).send(response)
     }
     catch(error){
         console.log(error)
+        // res.status(400).send(error)
     }
 }
 
@@ -30,9 +28,9 @@ const createNewUser = async (req,res)=> {
     try{
         const hashPass = await hashPassword(req.body.password)
         const newUserDocument = new userModel({...req.body, password:hashPass}) //instance new document with mongoose_model and save it in database.
-        const response = await newUserDocument.save() //Save the instanced document into database-collection.
-        console.log(response)
-        res.send(response)
+        const newUser = await newUserDocument.save() //Save the instanced document into database-collection.
+        console.log(`New user ${newUser.name} created!`)
+        res.send(newUser)
     }
     catch(error){
         res.send(error)
@@ -66,24 +64,42 @@ const deleteUser = async (req,res)=> {
     }
 }
 
-const logIn = async (req,res) => {
+const logIn = async (req,res,next) => {
     try{
         const user = await userModel.findOne({email: req.body.email})
         if(user==null){
-            throw "Invalid Creadentials"
+            throw "Unauthorized! (Invalid Credentials)"
         }
         const passMatch = await comparePassword(req.body.password,user.password)
         if(passMatch){
-            console.log("Logged In!")
-            res.json({logged:true})
+            const userId = user._id.toString()
+            const {error,accessToken,refreshToken} = await generateToken(userId)
+            console.log('Generating access token: ',{error,accessToken,refreshToken})
+            if(error){
+                throw error
+            }else{
+                res.cookie('accessToken', accessToken, { secure: true })
+                res.cookie('refreshToken', refreshToken, { httpOnly:true , secure: true })
+                res.status(200)
+                res.json({logged:true})
+            }
         }else{
-            throw "Invalid Creadentials"
+            throw "Unauthorized! (Invalid Credentials)"
         }
     }
     catch(error){
-        console.log(error)
-        res.json({logged:false})
+        console.log('Error while logging in: ',error) //login fail!     
+        res.status(401)
+        return next(new Error(error))
     }
 }
 
-export {getAllUsers,getAUser,createNewUser,updateUser,deleteUser,logIn}
+const logOut = async (req,res,next) => {
+    console.log("LOGOUT **************************************")
+    res.clearCookie('accessToken')
+    res.clearCookie('refreshToken')
+    res.end()
+    console.log("Log out!")
+}
+
+export {getAllUsers,getAUser,createNewUser,updateUser,deleteUser,logIn,logOut}
