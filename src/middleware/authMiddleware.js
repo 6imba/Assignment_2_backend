@@ -3,7 +3,7 @@ import {generateToken} from '../helpers/authHelper.js'
 
 const verify = async(token,secret) => {
     if(!token){
-        return {error:true, message:'Token not found'}
+        return {error:'no_token', message:'Token not found'}
     }
     const tokenVerification = await verifyToken(token,secret)
     if(tokenVerification.error){
@@ -19,7 +19,11 @@ const verify = async(token,secret) => {
 const auth = async (req,res,next) => {
     const accessToken = req.cookies.accessToken;
     const tokenVerification = await verify(accessToken, process.env.ACCESS_TOKEN_SECRET_KEY)
-    if(tokenVerification.error){
+    if(tokenVerification.error == 'no_token'){
+        res.status(401)
+        return next(new Error('Token not authenticated.'))
+    }
+    if(tokenVerification.error === true){
         console.log("access token expire")
         const refreshToken = req.cookies.refreshToken;
         const tokenVerification = await verify(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY)
