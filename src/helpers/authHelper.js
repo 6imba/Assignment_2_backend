@@ -5,15 +5,14 @@ const hashPassword = async (password) => await bcrypt.hash(password,10)
 
 const comparePassword = async (reqPass,hashPass) => await bcrypt.compare(reqPass,hashPass)
 
-const generateAccessToken = async (id) => {
+const generateToken = async (id) => {
     try{
         const payload = {userId:id}
-        const token = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY, {expiresIn: 300000})
-        // this.tokens = this.tokens.concat({token:token})
-        // await this.save()
-        return {error:false,token}
+        const accessToken = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY, {expiresIn: '15s'})
+        const refreshToken = await jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET_KEY, {expiresIn: '1h'})
+        return {error:false,accessToken,refreshToken}
     }catch(error){
-        return {error:true,errorMsg:error}
+        return {err:true,errorMsg:error}
     }
 }
 
@@ -21,11 +20,11 @@ const verifyToken = async (token) => {
         try{
             const tokenDetail = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET_KEY) //check_2: verify the refresh token send with http request is valid token.
             return { error:false, tokenDetail, message:"Valid access token!..." }
-        }    
+        }
         catch(err){
-            return {error:true, message:"Invalid token!",error_object:err}
+            return {error:true, message:err.message}
         }
     }
 
 
-export {hashPassword,comparePassword,generateAccessToken,verifyToken}
+export {hashPassword,comparePassword,generateToken,verifyToken}

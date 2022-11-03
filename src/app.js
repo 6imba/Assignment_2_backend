@@ -5,9 +5,9 @@ import express from "express";
 import cors from 'cors';
 import cookieParser from 'cookie-parser'
 import connectDB from "./db/conn.js"
-import userRouter  from './routes/user.js'
-import { errorHandler } from './helpers/errorHandler.js'
-// import { notFound, errorHandler } from './helpers/errorHandler.js'
+import routes  from './routes/router.js'
+// import { errorHandler } from './helpers/errorHandler.js'
+import { notFound, errorHandler } from './helpers/errorHandler.js'
 
 
 try {
@@ -24,15 +24,14 @@ const corsOptions = { origin: '*', credentials: true };
 app.use(cors(corsOptions));
 app.use(express.json())
 app.use(cookieParser()) 
-
-app.use('/api/user',userRouter)
+app.use('/api', routes)
 // app.use('/api/user', userAuth, userRouter)
 app.get('/', (req,res) => {
     console.log("Api landing page ...")
-    res.send("Api landing page ...")
+    return res.json({status: "Running" ,message: "Api landing page ..."})
 })
 
-// app.use(notFound);
+app.use(notFound);
 app.use(errorHandler);
 
 app.listen(EXPRESS_PORT, (req,res) => {
