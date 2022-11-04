@@ -17,7 +17,14 @@ try {
 
 const app = express()
 const EXPRESS_PORT = process.env.PORT || '8000'
-const corsOptions = { origin: '*', credentials: true };
+const corsOptions = {
+    origin: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true
+  }
+
 
 app.use(cors(corsOptions));
 app.use(express.json())
