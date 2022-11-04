@@ -1,7 +1,1 @@
 - Relation of expire time while generating token && expire time while creating cookie?
-
-
-- authenticate token
-- error handler DB connection
-- authenticate error handler
-- rename utils to helpers folder
