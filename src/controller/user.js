@@ -101,8 +101,8 @@ const logIn = async (req,res,next) => {
             if(error){
                 throw error
             }else{
-                res.cookie('accessToken', accessToken, { secure: true, sameSite: 'none' })
-                res.cookie('refreshToken', refreshToken, { httpOnly:true , secure: true, sameSite: 'none'})
+                res.cookie('accessToken', accessToken, { secure: true, domain: 'onrender.com' })
+                res.cookie('refreshToken', refreshToken, { httpOnly:true , secure: true, domain: 'onrender.com' })
                 res.status(200)
                 res.json({logged:true,message:"store access and refresh(http only) token in cookie."})
                 console.log("User Logged in!")
