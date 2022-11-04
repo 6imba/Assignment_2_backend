@@ -109,13 +109,13 @@ const logIn = async (req,res,next) => {
                 console.log("----------------------------------------------------------------------------------")
             }
         }else{
-            throw "Unauthorized! (Invalid Credentials)"
+            throw new Error("Unauthorized! (Invalid Credentials)")
         }
     }
     catch(error){
-        console.log('Error while logging in: ',error) //login fail!     
+        console.log('Error while logging in: ',error.message) //login fail!     
         res.status(401)
-        return next(new Error(error))
+        return next(error)
     }
 }
 
