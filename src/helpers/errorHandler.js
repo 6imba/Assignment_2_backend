@@ -1,3 +1,10 @@
+// Not found
+const notFound = (req, res, next) => {
+  const error = new Error(`Not Found - ${req.method} ${req.originalUrl}`);
+  res.status(404);
+  next(error);
+};
+
 // Error handling
 const errorHandler = (error, req, res, next) => {
   res.send({success:false,message:error.message})
@@ -7,4 +14,4 @@ const errorHandler = (error, req, res, next) => {
 
 };
 
-export { errorHandler }
+export { notFound, errorHandler }

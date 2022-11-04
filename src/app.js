@@ -6,9 +6,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser'
 import connectDB from "./db/conn.js"
 import routes  from './routes/router.js'
-// import { errorHandler } from './helpers/errorHandler.js'
-import { errorHandler } from './helpers/errorHandler.js'
-
+import { notFound, errorHandler } from './helpers/errorHandler.js'
 
 try {
     await connectDB(); 
@@ -31,6 +29,7 @@ app.get('/', (req,res) => {
     return res.json({status: "Running" ,message: "Api landing page ..."})
 })
 
+app.use(notFound);
 app.use(errorHandler);
 
 app.listen(EXPRESS_PORT, (req,res) => {
